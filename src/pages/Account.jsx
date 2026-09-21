@@ -1,7 +1,9 @@
 import { Link } from "react-router-dom";
 import { useState } from "react";
+import { useWishlist } from "../context/WishlistContext";
 
 export default function Account() {
+  const { wishlist, removeFromWishlist } = useWishlist();
   const [activeTab, setActiveTab] = useState("profile");
 
   const tabs = [
@@ -120,10 +122,35 @@ export default function Account() {
             {activeTab === "wishlist" && (
               <div className="account-section">
                 <h2>My Wishlist</h2>
-                <p className="empty-wishlist">Your wishlist is empty.</p>
-                <Link to="/shop" className="btn btn-accent">
-                  Browse Products
-                </Link>
+                {wishlist.length === 0 ? (
+                  <>
+                    <p className="empty-wishlist">Your wishlist is empty.</p>
+                    <Link to="/shop" className="btn btn-accent">
+                      Browse Products
+                    </Link>
+                  </>
+                ) : (
+                  <div className="wishlist-grid">
+                    {wishlist.map((product) => (
+                      <div key={product.id} className="wishlist-item">
+                        <Link to={`/product/${product.id}`} className="wishlist-item-link">
+                          <img src={product.image} alt={product.title} className="wishlist-item-image" />
+                          <div className="wishlist-item-details">
+                            <h3>{product.title}</h3>
+                            <p className="wishlist-item-author">{product.author}</p>
+                            <p className="wishlist-item-price">₹{product.price}</p>
+                          </div>
+                        </Link>
+                        <button
+                          className="wishlist-remove-btn"
+                          onClick={() => removeFromWishlist(product.id)}
+                        >
+                          Remove
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                )}
               </div>
             )}
 
